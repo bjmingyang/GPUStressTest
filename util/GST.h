@@ -83,14 +83,14 @@
 #define NUM_TESTS 5
 #define TEST_WAIT_TIME 600
 
-#ifdef __linux__ 
+#ifdef __linux__
 #else
 #include <Windows.h>
 #endif
 
 class GST {
 
-public: 
+public:
 
     struct stress_test_args {
         const char* test_name = "undefined";
@@ -108,7 +108,7 @@ public:
 
     struct stress_test_args stress_tests[NUM_TESTS];
 
-    enum test_suite {T4, A100_40, A100_80, K80, M60, P40, P100, B200, H100, H200, V100_16, V100_32, RTX6000, Generic};
+    enum test_suite {T4, A100_40, A100_80, K80, M60, P40, P100, B200, H100, H200, V100_16, V100_32, L40S, RTX6000, Generic};
 
     GST(const test_suite gpu) {
         switch (gpu) {
@@ -124,13 +124,16 @@ public:
         case A100_80:
             init_a100_80();
             break;
-        case B200: 
+        case B200:
             init_b200();
             break;
         case RTX6000:
             init_rtx6000();
             break;
-        case H200: 
+        case L40S:
+            init_l40s();
+            break;
+        case H200:
             init_h200();
             break;
         case K80:
@@ -159,7 +162,7 @@ public:
     {
         init_generic();
     }
-    
+
     void dump_test_args(int t_num) {
         printf("stress_tests[%d].test_name %s\n  P %s\n  m %d\n  n %d\n  k %d\n  ta %d\n  tb %d\n  B %d\n  p %s\n  sd %d\n",
 	       t_num,
@@ -177,7 +180,7 @@ public:
         return;
     }
 
-private: 
+private:
 
     void init_rtx6000() {
 /** Gets CUBLAS_STATUS_INVALID_VALUE
@@ -243,6 +246,72 @@ private:
         stress_tests[4].tb_arg = 1;
         stress_tests[4].B_arg = 0;
     }
+
+    void init_l40s() {
+/** Gets CUBLAS_STATUS_INVALID_VALUE
+        stress_tests[0].test_name = "FP4";
+        stress_tests[0].test_state = 0;
+        stress_tests[0].P_arg = "nvoohso";
+        stress_tests[0].m_arg = 9472;
+        stress_tests[0].n_arg = 4096;
+        stress_tests[0].k_arg = 16384;
+        stress_tests[0].ta_arg = 1;
+        stress_tests[0].tb_arg = 0;
+        stress_tests[0].B_arg = 0;
+        stress_tests[0].p_arg = 't';
+        stress_tests[0].sd_arg = 2;
+ **/
+        stress_tests[0].test_name = "FP16";
+        stress_tests[0].test_state = 0;
+        stress_tests[0].P_arg = "hsh";
+        stress_tests[0].m_arg = 80982;
+        stress_tests[0].n_arg = 89336;
+        stress_tests[0].k_arg = 207286;
+        stress_tests[0].ta_arg = 0;
+        stress_tests[0].tb_arg = 1;
+        stress_tests[0].B_arg = 0;
+
+        stress_tests[1].test_name = "FP16";
+        stress_tests[1].test_state = 0;
+        stress_tests[1].P_arg = "hsh";
+        stress_tests[1].m_arg = 59982;
+        stress_tests[1].n_arg = 49336;
+        stress_tests[1].k_arg = 157286;
+        stress_tests[1].ta_arg = 0;
+        stress_tests[1].tb_arg = 1;
+        stress_tests[1].B_arg = 0;
+
+        stress_tests[2].test_name = "TF32";
+        stress_tests[2].test_state = 0;
+        stress_tests[2].P_arg = "sss_fast_tf32";
+        stress_tests[2].m_arg = 210712;
+        stress_tests[2].n_arg = 68472;
+        stress_tests[2].k_arg = 17216;
+        stress_tests[2].ta_arg = 1;
+        stress_tests[2].tb_arg = 0;
+        stress_tests[2].B_arg = 0;
+
+        stress_tests[3].test_name = "FP64";
+        stress_tests[3].test_state = 0;
+        stress_tests[3].P_arg = "ddd";
+        stress_tests[3].m_arg = 23506;
+        stress_tests[3].n_arg = 10730;
+        stress_tests[3].k_arg = 65830;
+        stress_tests[3].ta_arg = 0;
+        stress_tests[3].tb_arg = 1;
+        stress_tests[3].B_arg = 0;
+
+        stress_tests[4].test_name = "FP32";
+        stress_tests[4].test_state = 0;
+        stress_tests[4].P_arg = "sss";
+        stress_tests[4].m_arg = 225712;
+        stress_tests[4].n_arg = 58640;
+        stress_tests[4].k_arg = 15072;
+        stress_tests[4].ta_arg = 0;
+        stress_tests[4].tb_arg = 1;
+        stress_tests[4].B_arg = 0;
+    }
+
 
 
     void init_a100_40() {
@@ -779,7 +848,4 @@ private:
 
 
 };
-
-
-
 
