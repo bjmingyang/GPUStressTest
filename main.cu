@@ -9,10 +9,10 @@
  * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
  * the Software, and to permit persons to whom the Software is furnished to do so,
  * subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -59,11 +59,11 @@
 #include "test_util.h"
 
 /* fault injection */
-#include <thread>        
-#include <chrono>         
+#include <thread>
+#include <chrono>
 
 /* watchdog includes; POSIX support on Windows with:
-** 
+**
 https://docs.microsoft.com/en-us/cpp/build/vcpkg?view=vs-2019
 https://github.com/microsoft/vcpkg.git
 **
@@ -105,7 +105,7 @@ bool watchdog_bailed = false;
  * Semaphores used for watchdog implementation:
  * wd - main() to watchdog to indicate test started
  * go - watchdog to main() to indicate run next test
- * done - main() to watchdog to indicate test complete 
+ * done - main() to watchdog to indicate test complete
  */
 sem_t wd, go, done;
 
@@ -124,7 +124,7 @@ void* watchdog(void* in)
 
     int i = 0, n = 0;
     struct timespec ts;
-    
+
     sem_post(&go);
     do {
         sem_wait(&wd);
@@ -161,7 +161,7 @@ void* watchdog(void* in)
 }
 /* ---------------------------------------------------------------------------------------------------------------------------*/
 
-/*The base code for GST is cublasMatMulbench which accepts command 
+/*The base code for GST is cublasMatMulbench which accepts command
 **line arguments largely ignored by GST but left intact. Existing
 ** options include the time_loop "-T=<loop count>" which is used by GST
 ** and defaults to 100 requiring a runtime of around 30 min for five tests
@@ -853,7 +853,7 @@ static void test_engine(BlasOpts &blas_opts) {
     matrixSizeC = (size_t)rowsC * colsC;
 
 #ifdef DEBUG_MATRIX_SIZES
-   printf("matrixSizeA %ld matrixSizeB %ld matrixSizeC %ld m_outOfPlace %d\n", 
+   printf("matrixSizeA %ld matrixSizeB %ld matrixSizeC %ld m_outOfPlace %d\n",
            matrixSizeA, matrixSizeB, matrixSizeC, blas_opts.m_outOfPlace);
 #endif
 
@@ -1339,13 +1339,13 @@ int main(int argc, char *argv[]) {
   printf("%s done capturing GPU information.\n", argv[0]);
 
 // These entries should match GST::test_suite; clever C++ way to range over the enum and cast to string not obvious...
-for (string gpu_name :  {"RTX6000", "T4", "A100_40", "A100_80", "K80", "M60", "P40", "P100", "B200", "H100", "H200", "V100_16", "V100_32", "Generic", "NVIDIA Graphics Device"}) {
+for (string gpu_name :  {"RTX6000", "T4", "A100_40", "A100_80", "K80", "L40S" , "M60", "P40", "P100", "B200", "H100", "H200", "V100_16", "V100_32", "Generic", "NVIDIA Graphics Device"}) {
 
-if (!gpu_name.compare(string("A100_80"))) { 
+if (!gpu_name.compare(string("A100_80"))) {
     printf("set A100_80\n");
     gpumem = 80;
 }
-if (!gpu_name.compare(string("A100_80"))) { 
+if (!gpu_name.compare(string("A100_80"))) {
     printf("set A100_80\n");
     gpumem = 80;
 }
@@ -1364,7 +1364,7 @@ else if (!gpu_name.compare(string("V100_32"))) {
     gpumem = 180;
     gpu_name = "B200";
   }
- 
+
   while (true) {
 
       if (gpu_name.find("6000", 0) != string::npos) {
@@ -1439,6 +1439,12 @@ else if (!gpu_name.compare(string("V100_32"))) {
         cout << "Initilizing H100 based test suite" << endl;
         gst = GST(GST::H100);
         memgb = 80;
+        break;
+    }
+    if (gpu_name.find("L40S", 0) != string::npos) {
+        cout << "Initilizing L40S based test suite" << endl;
+        gst = GST(GST::L40S);
+        memgb = 48;
         break;
     }
     if (gpu_name.find("H200", 0) != string::npos) {
@@ -1671,7 +1677,7 @@ else if (!gpu_name.compare(string("V100_32"))) {
             tstate[t_num].test_state = 1;
             tstate[t_num].start_time = time(NULL);
             // cout << "DEBUG:" << "signal wd" << endl;
-        
+
             /* Signal watchdog test started */
             sem_post(&wd);
             // cout << "DEBUG:" << "start test" << endl;
@@ -1680,7 +1686,7 @@ else if (!gpu_name.compare(string("V100_32"))) {
             test_cublasLt(blas_opts);
             printf("***** TEST %s On Device %d %s\n", gst.stress_tests[t_num].test_name, dev, devprops[dev].name);
 
-            if (!test_ran) 
+            if (!test_ran)
                 printf("***** TEST DID NOT EXECUTE *****\n\n");
             else {
                 if (has_error == true || test_hung == true) {
@@ -1712,12 +1718,8 @@ else if (!gpu_name.compare(string("V100_32"))) {
     gpumem=0;
 }
 #endif
-  
+
   exit(ret);
 }
-
-
-
-
 
 
